@@ -1,31 +1,30 @@
-const express = require('express');
-const sqlite = require('sqlite3');
-const passport = require('passport');
-const session = require('express-session');
-const { UsersManager } = require('auth0');
+const express = require('express')
+const bodyparser = require('body-parser')
+const router = require('./routes')
+
+const app = express()
+
+app.use('/',router)
+app.use(express.static(__dirname + '/styles'));
 
 
-app = express();
+app.use(bodyparser.urlencoded(({extended:true})))
+app.use(bodyparser.json())
 
-let db = new sqlite.Database('./db/sun.db',(err)=>{
-    if(err){
-        console.error(err.message)
-    }else{
-        console.log('database is worked')
-    }
+app.use(function(req,res,next){
+    const err = new Error ('no found')
+    err.status = 404;
+    next(err)
 })
 
-// Конфигурация для passport
-app.use(session({secret:'mySecretKey'}));
-app.use(passport.initialize())
-app.use(passport.session);
-
-
-passport.serializeUser(function(user,done){
-    done(null,user._id);
-});
-passport.deserializeUser(function(id,done){
-    User.findBtId(id,function(err,user){
-        done(err,user);
+app.use(function(err,req,res,next){
+    res.status(err.status || 500)
+    res.json({
+        message: err.message,
+        error: err
     })
+})
+
+app.listen(8080, function(){
+    console.log('server has been started')
 })
