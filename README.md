@@ -10,4 +10,4 @@ V.1.1 Project abandoned
 
 
 
-v.1- the project is not finished
+v.1.0 the project is not finished
